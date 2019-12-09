@@ -2,11 +2,11 @@
 
 <% for(let i = 0; i < todos.length; i++) { %>
 
-    <p><%= todos[i] %></p>
+    <p id="<%= i %>"><%= todos[i] %> <form method="post" action="/todo/supprimer/<%= i %>"><button type="submit">Supp</button></form></p>
 
 <% } %>
 
-<form method="post" action="ajouter">
+<form method="post" action="/todo/ajouter">
     <input type="text" name="newTodo">
     <button type="submit">Add</button>
 </form>
