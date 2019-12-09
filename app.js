@@ -12,7 +12,7 @@ let todosArray = [];
 
 
 app.get('/todo', function (req, res) {
-    res.render('todo.ejs')
+    res.render('add.ejs', {todos: todosArray})
 })
 .post('/todo/ajouter', urlencodedParser, function (req, res) {
     todosArray.push(req.body.newTodo);
