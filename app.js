@@ -1,31 +1,43 @@
-let express = require('express');
-let cookieSession = require('cookie-session');
-let bodyParser = require('body-parser');
+const express = require('express');
+const cookieSession = require('cookie-session');
+const bodyParser = require('body-parser');
 
 let urlencodedParser = bodyParser.urlencoded({extended: false});
 
 let app = express();
 
-app.use(cookieSession({secret: 'todotopsecret'}))
+app.use(cookieSession({
+    name: 'session',
+    keys: ['todolistjs'],
+    maxAge: 24 * 60 *60 * 1000
+}))
 
-let todosArray = [];
+.use(function(req, res, next) {
+    if(typeof(req.session.todoList) == 'undefined') {
+        req.session.todoList = [];
+    }
+    next();
+})
 
 
 app.get('/todo', function (req, res) {
-    res.render('add.ejs', {todos: todosArray})
+    res.render('add.ejs', {todoList: req.session.todoList});
 })
 .post('/todo/ajouter', urlencodedParser, function (req, res) {
-    todosArray.push(req.body.newTodo);
-    res.render('add.ejs', {todos: todosArray})
+   if(req.body.newTodo != '') {
+       req.session.todoList.push(req.body.newTodo);
+   }
+    res.redirect('/todo');
 })
-.post('/todo/supprimer/:id', function(req, res) {
-    // supprime le todo correspondant
-    todosArray.splice(req.params.id,1);
-    // faire le render
-    res.render('add.ejs', {todos: todosArray})
+.get('/todo/supprimer/:id', function(req, res) {
+    if(req.params.id !='') {
+        req.session.todoList.splice(req.params.id, 1);
+    }
+   res.redirect('/todo');
 })
 
+.use(function(req, res) {
+    res.redirect('/todo');
+})
 
-
-
-app.listen(8080);
+.listen(8080);
